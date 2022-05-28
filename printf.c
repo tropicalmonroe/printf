@@ -1,46 +1,75 @@
 #include "main.h"
 /**
- * _printf - produces output according to a format
- * @format: has specifiers
- * Return: output string
- */
+ * opFunction - printf funct.
+ * @list: Lista arguments
+ * @cont: Counter for our prog
+ * @typos: types
+ * @format: format 
+ * Return: Length
+*/
+int opFunction(int cont, va_list list, typedate tipos[], const char *format)
+{
+int i = 0, j = 0, band = 0, spaces = 0;
+while (format && format[i])
+{
+	band = 0;
+	if (format[i] == '%' && format[i + 1] == '\0')
+	return (-1);
+	else if (format[i] == '%' && format[i + 1] != '%')
+	{
+		for (j = 0; j < 7; j++)
+		{
+			if (format[i] == '%' && format[i + spaces + 1] == tipos[j].typec)
+			{
+				cont += tipos[j].fun(list);
+				i += spaces + 1;
+				band = 1;
+			}
+		}
+		if (band == 0 && format[i + 2] != '\n')
+		{
+			_putchar(format[i]);
+			cont++;
 
+		}
+		else if (band == 0 && format[i + 2] == '\n')
+		{
+			_putchar(format[i]);
+			cont++;
+		}
+	}
+	else if (format[i] == '%' && format[i + 1] == '%')
+	{
+		i += _putchar('%');
+		cont += 1;
+	}
+	else
+		cont += _putchar(format[i]);
+	i++;
+}
+	return (cont);
+}
+/**
+ * _printf - Printf!!
+ * @format: Format
+ * Return: len
+ */
 int _printf(const char *format, ...)
 {
-	int (*f)(va_list, flags_t *);
-	const char *s;
-	va_list arg;
-	flags_t fl = {0, 0, 0,}
+typedate tipos[] = {
+	{'s', printString}, {'c', printChar}, {'i', printInteger},
+	{'d', printDecimal}, {'b', printBinary}, {'o', printOctal},
+	{'u', printUnsigned}
+};
+va_list list;
+int cont = -1;
 
-	register int co = 0;
-
-	va_start(arg, format);
-	if (!format || (format[0] == '%' && !format [1]))
-		return (-1);
-	if (format[0] == '%' && format[1] == ' ' && !format[2])
-		return (-1);
-
-	for (s = format; *s; s++)
-	{
-		if (*s == '%')
-		{
-			s++;
-			if (*s == '%')
-			{
-				count += _putchar('%');
-				continue;
-			}
-			while (get_flag(*s, &fl))
-				s++;
-			f = get_print(*s);
-			count += (f)
-				? f(arg, &fl)
-				: _printf("%%%c", *s);
-		}
-		else
-			count += _putchar(*s);
-	}
-	_putchar(-1);
-	va_end(arg);
-	return (count);
+if (format != NULL)
+{
+va_start(list, format);
+cont = 0;
+cont = opFunction(cont, list, tipos, format);
+va_end(list);
+}
+return (cont);
 }
